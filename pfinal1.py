@@ -10,6 +10,7 @@ import logging
 from crear import crear_escenario
 from list_contenedores import list
 from start_escenario import start
+from delete_escenario import delete
 
 accion = sys.argv[1]  # esto va a ser el primer argumento del comando --> se usa abajo en el main
 
@@ -46,3 +47,6 @@ if accion == "start":
 
 if accion == "list":
     list()
+
+if accion == "delete":
+    delete()
