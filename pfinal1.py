@@ -36,8 +36,8 @@ if accion == "create":
             logging.error("El número de servidores debe ser un entero.")
             sys.exit(1)
     crear_escenario(servidores)
-    with open("numero_contenedores", "w") as numero:
-        numero.write(str(servidores))
+    # with open("numero_contenedores", "w") as numero:
+    #     numero.write(str(servidores))
 
 
 if accion == "start":
