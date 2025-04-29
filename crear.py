@@ -2,6 +2,7 @@ import sys
 import subprocess
 import os
 import logging
+import funciones_utiles
 
 # archivo donde vamos a guardar y leer la información del escenario
 ARCHIVO_CONFIG = "servidores.txt"
@@ -19,25 +20,6 @@ logging.basicConfig(
     filemode='a'   # 'a' para añadir los nuevos logs al final del archivo (en vez de sobrescribir)
 )
 
-# verifica si un contenedor existe
-def existe_contenedor(nombre):
-    logging.info(f"Verificando si el contenedor {nombre} existe...")
-    result = subprocess.run(["lxc", "list", nombre], capture_output=True, text=True)
-    return nombre in result.stdout
-
-# verificarç si un bridge existe
-def existe_bridge(nombre):
-    logging.info(f"Verificando si el bridge {nombre} existe...")
-    try:
-        # Ejecutar el comando `lxc network list` para verificar si el bridge existe
-        result = subprocess.run(["lxc", "network", "list"], capture_output=True, text=True)
-        if nombre in result.stdout:
-            return True
-        return False
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error al verificar el bridge {nombre}: {e}")
-        return False
-    
 ''' configura la infraestructura de red para el escenario 
     n --> número de servidores
     bool --> true si se configura bien, false si hay error '''
@@ -45,7 +27,7 @@ def configurar_redes(n: int):
     logging.info("Configurando red: creando bridges...")
     
     # creamos/comprobamos que ya existen los bridge, los configuramos
-    if not existe_bridge("lxdbr1"):
+    if not funciones_utiles.existe_bridge("lxdbr1"):
         try:
             subprocess.run(["lxc", "network", "create", "lxdbr1", 
                             "ipv4.address=134.3.1.1/24", "ipv4.nat=false", 
@@ -62,7 +44,7 @@ def configurar_redes(n: int):
                             "ipv6.address=none", "ipv6.nat=false",
                             "dns.domain=lxd", "dns.mode=none"])
 
-    if not existe_bridge("lxdbr0"):
+    if not funciones_utiles.existe_bridge("lxdbr0"):
         try:
             subprocess.run(["lxc", "network", "create", "lxdbr0", 
                             "ipv4.address=134.3.0.1/24", "ipv4.nat=false", 
@@ -122,7 +104,7 @@ def crear_escenario(n):
     with open(ARCHIVO_CONFIG, "w") as file:
         for i in range(1, n + 1): # dentro del bucle for se crean n contenedores. Si no ponemos +1 carga hasta el 3 si ponemos '4'
             nombre = f"s{i}"
-            if existe_contenedor(nombre):
+            if funciones_utiles.existe_contenedor(nombre):
                 logging.info(f"El contenedor {nombre} ya existe. Saltando creación.")
             else:
                 subprocess.run(["lxc", "init", "ubuntu:20.04", nombre])
@@ -130,14 +112,14 @@ def crear_escenario(n):
                 file.write(nombre + "\n")
 
         # Fuera del bucle se crean contendores como balanceador y cliente
-        if existe_contenedor("lb"):
+        if funciones_utiles.existe_contenedor("lb"):
             logging.info("El balanceador lb ya existe. Saltando creación.")
         else:
             logging.info("Creando balanceador lb...")
             subprocess.run(["lxc", "init", "ubuntu:20.04", "lb"])
             file.write("lb\n")
 
-        if existe_contenedor("cl"):
+        if funciones_utiles.existe_contenedor("cl"):
             logging.info("El contenedor cl ya existe. Saltando creación.")
         else:
             logging.info("Creando cliente cl...")
@@ -150,8 +132,6 @@ def crear_escenario(n):
 
 
     logging.info("Escenario creado correctamente.")
-    subprocess.run(["lxc", "list"])
-    subprocess.run(["lxc", "list", "--fast"])
 
     print("Escenario creado correctamente.")
-    subprocess.run(["lxc", "list", "--fast"])
+    subprocess.run(["lxc", "list"])

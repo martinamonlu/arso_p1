@@ -8,6 +8,8 @@ import subprocess
 import os
 import logging
 from crear import crear_escenario
+from list_contenedores import list
+from start_escenario import start
 
 accion = sys.argv[1]  # esto va a ser el primer argumento del comando --> se usa abajo en el main
 
@@ -33,3 +35,14 @@ if accion == "create":
             logging.error("El número de servidores debe ser un entero.")
             sys.exit(1)
     crear_escenario(servidores)
+    with open("numero_contenedores", "w") as numero:
+        numero.write(str(servidores))
+
+
+if accion == "start":
+    start()
+    subprocess.run(["lxc", "list"])
+
+
+if accion == "list":
+    list()
