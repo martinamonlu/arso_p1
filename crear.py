@@ -2,14 +2,15 @@ import sys
 import subprocess
 import os
 import logging
+import time
 import funciones_utiles
 
 # archivo donde vamos a guardar y leer la información del escenario
 ARCHIVO_CONFIG = "servidores.txt"
 
-# verifica si se ha proporcionado un nombre de contenedor
+# verifica si se han proporcionado los parámetros necesarios
 if len(sys.argv) < 2:
-    print("Uso: python3 pfinal1.py <create/start/list/delete> [num_servidores]")
+    print("Uso: python3 pfinal1.py <create> [num_servidores]")
     sys.exit(1)
 
 # Configuración para guardar los logs en un archivo y añadirlos en cada ejecución
@@ -134,4 +135,33 @@ def crear_escenario(n):
     logging.info("Escenario creado correctamente.")
 
     print("Escenario creado correctamente.")
+    time.sleep(3)
     subprocess.run(["lxc", "list"])
+
+
+def crear_contenedor():
+   # Verificar si se ha proporcionado un nombre de contenedor
+   if len(sys.argv) != 3:
+       print("Uso: python3 pfinal1.py create_contenedor <nombre_contenedor>")
+       sys.exit(1)
+
+
+   nombre_contenedor = sys.argv[2]
+
+
+   # Verificar si el contenedor ya existe
+   if funciones_utiles.existe_contenedor(nombre_contenedor):
+       print(f"¡El contenedor con nombre '{nombre_contenedor}' ya existe!")
+       logging.warning(f"Intento de crear contenedor existente: {nombre_contenedor}") # warning porque es algo inesperado pero no detiene la ejecución. Un nivel más alto que info
+       sys.exit(1)
+  
+   else:
+       # Crear el contenedor
+       print(f"Creando el contenedor: {nombre_contenedor} ...")
+       subprocess.run(["lxc", "init", "ubuntu:20.04", nombre_contenedor])
+       logging.info("Creando contenedor...")
+
+
+       # Mostrar información del contenedor creado (not necessary)
+       print(f"\nInformación del contenedor {nombre_contenedor}:")
+       subprocess.run(["lxc", "info", nombre_contenedor])
