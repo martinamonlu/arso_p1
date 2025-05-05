@@ -51,4 +51,4 @@ def stop():
             return
 
         else:
-            print("Nombre no válido. Intente de nuevo")
+            print("Nombre no válido. Inténtelo de nuevo")

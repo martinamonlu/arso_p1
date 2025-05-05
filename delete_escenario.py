@@ -1,19 +1,7 @@
-import sys
 import subprocess
-import os
 import logging
-import funciones_utiles
 
 ARCHIVO_CONFIG = "servidores.txt"
-
-# def servidores_running():
-#     print("Los contenedores estan running ¿está seguro de que quiere borrarlos? [Y/N]") 
-#     ans = input() 
-#     if ans == "Y":
-#         return true
-   
-   
-
 
 def delete():
     with open(ARCHIVO_CONFIG, "r") as file:
@@ -52,6 +40,6 @@ def delete():
             return
 
         else:
-            print("Nombre no válido. Intente de nuevo")
+            print("Nombre no válido. Inténtelo de nuevo")
         
 
