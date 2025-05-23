@@ -43,7 +43,7 @@ def start():
                 time.sleep(2)
                 subprocess.Popen(["xterm", "-e", "lxc exec " + ans + " bash"])
 
-                with open(ARCHIVO_RUN, "w") as file:
+                with open(ARCHIVO_RUN, "a") as file:
                     file.write(f"{ans}\n")
 
         elif ans == "s" or ans == "S":
