@@ -81,6 +81,9 @@ def crear_contenedor():
         print(f"Creando el contenedor: {nombre_contenedor} ...")
         subprocess.run(["lxc", "init", "ubuntu:20.04", nombre_contenedor])
         logging.info("El contenedor se ha creado correctamente.")
+        with open(ARCHIVO_CONFIG, "a") as file:
+            file.write(f"\n{nombre_contenedor}")
+
 
 
 ''' configura la infraestructura de red para el escenario 
